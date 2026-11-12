@@ -16,6 +16,8 @@ def binomial_distribution(successes: int, trials: int, prob: float) -> float:
     0.30870000000000003
     >>> binomial_distribution (2, 4, 0.5)
     0.375
+    >>> binomial_distribution(85, 171, 0.5)
+    0.060749764626165485
     """
     if successes > trials:
         raise ValueError("""successes must be lower or equal to trials""")
@@ -27,8 +29,11 @@ def binomial_distribution(successes: int, trials: int, prob: float) -> float:
         raise ValueError("prob has to be in range of 1 - 0")
     probability = (prob**successes) * ((1 - prob) ** (trials - successes))
     # Calculate the binomial coefficient: n! / k!(n-k)!
-    coefficient = float(factorial(trials))
-    coefficient /= factorial(successes) * factorial(trials - successes)
+    # Integer division keeps the huge factorials exact; converting n! to a float
+    # first overflows for trials >= 171 even when the coefficient itself fits.
+    coefficient = factorial(trials) // (
+        factorial(successes) * factorial(trials - successes)
+    )
     return probability * coefficient
 
 
